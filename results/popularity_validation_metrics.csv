@@ -1,0 +1,2 @@
+model,split,users,Recall@10,NDCG@10
+Popularity,validation,2322,0.37018744453010355,0.3021646102115652

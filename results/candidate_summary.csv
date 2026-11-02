@@ -1,0 +1,3 @@
+split,period_users,history_lt_min,candidates_lt_min,no_positive,no_zero,evaluated,candidate_pairs
+validation,19091,5631,10727,411,0,2322,143368
+test,26907,8262,9601,1305,2,7737,527231

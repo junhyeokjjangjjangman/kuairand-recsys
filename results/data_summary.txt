@@ -1,0 +1,35 @@
+
+[STANDARD LOG]
+Rows: 1,141,112
+Users: 26,210
+Videos: 7,538
+Date range: 20220409 - 20220421
+long_view counts: {0: 756991, 1: 384121}
+is_rand counts: {0: 1141112}
+Missing values: {'user_id': 0, 'video_id': 0, 'date': 0, 'long_view': 0, 'is_rand': 0}
+
+[RANDOM LOG]
+Rows: 1,186,059
+Users: 27,285
+Videos: 7,583
+Date range: 20220422 - 20220508
+long_view counts: {0: 1085290, 1: 100769}
+is_rand counts: {1: 1186059}
+Missing values: {'user_id': 0, 'video_id': 0, 'date': 0, 'long_view': 0, 'is_rand': 0}
+
+[TRAINING HISTORY: APRIL 9-21]
+Exposure rows: 1,141,112
+Distinct positive user-video pairs: 382,531
+Users with at least 5 positive videos: 18,877
+Videos with positive training history: 6,727
+
+[VIDEO INFORMATION]
+Video rows: 7,583
+Distinct video IDs: 7,583
+Duplicate video IDs: 0
+Videos with tags: 7,487
+Videos without tags: 96
+Distinct tags: 46
+Tag IDs: ['1', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '2', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '3', '30', '34', '35', '36', '37', '38', '39', '4', '40', '42', '43', '5', '54', '56', '6', '60', '62', '65', '67', '68', '7', '8', '9']
+
+Two-log rows: 2,327,171

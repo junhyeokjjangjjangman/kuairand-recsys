@@ -1,0 +1,15 @@
+{
+  "selection_split": "validation",
+  "selection_metric": "NDCG@10",
+  "top_k": 10,
+  "item_knn": {
+    "neighbors": 100
+  },
+  "hybrid": {
+    "neighbors": 100,
+    "alpha": 0.75
+  },
+  "minmax_epsilon": 1e-12,
+  "hybrid_scoring_rule": "uniform_cf_weight_v2",
+  "ranking_tie_break": "score_desc_video_id_asc"
+}

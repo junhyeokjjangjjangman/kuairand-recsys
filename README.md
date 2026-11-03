@@ -4,6 +4,31 @@ KuaiRand 추천 시스템 텀프로젝트
 인기순 추천, Item-KNN, 하이브리드를 같은 조건에서 비교하고, 기존 사용자 ID를 입력하면 영상 ID와 추천 점수를 최대 10개 출력합니다.
 
 저장소: https://github.com/junhyeokjjangjjangman/kuairand-recsys
+
+
+
+빠른 실행 순서
+처음 실행할 때
+
+Python 3.13·Git·VS Code 설치 → 저장소 다운로드 → VS Code에서 프로젝트 폴더 열기
+
+→ 가상환경 생성 → 라이브러리 설치 → 원본 CSV 3개를 data/raw에 넣기
+
+→ 아래 파일을 순서대로 실행 → 사용자 ID 5 입력 → 추천 결과 확인
+
+파일 실행 순서
+
+split_data.py → preprocess_data.py → prepare_candidates.py
+→ popularity.py → run_item_knn.py → content.py
+→ run_hybrid.py → run_test.py → demo.py
+
+한 번 전부 실행한 다음부터
+
+VS Code에서 프로젝트 폴더 열기 → 터미널에서 아래 명령 실행 → 사용자 ID 입력
+.\.venv\Scripts\python.exe .\src\demo.py
+각 단계의 실제 명령어는 아래 2~6절에 있습니다
+
+
 1. 실행 환경
 아래 안내는 Windows PowerShell 기준입니다.
 - 개발 시 사용한 Python: 3.13.7

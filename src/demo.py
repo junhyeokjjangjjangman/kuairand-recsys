@@ -96,7 +96,7 @@ def recommend(user_id, state):
         ["score", "video_id"], ascending=[False, True],
     ).head(int(state["settings"]["top_k"])).copy()
     top["rank"] = range(1, len(top) + 1)
-    return top[["rank", "video_id", "score"]], method
+    return top[["rank", "video_id", "cf_norm", "content_norm", "score"]], method
 
 
 def main():

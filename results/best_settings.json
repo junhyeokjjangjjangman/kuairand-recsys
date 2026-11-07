@@ -3,11 +3,11 @@
   "selection_metric": "NDCG@10",
   "top_k": 10,
   "item_knn": {
-    "neighbors": 100
+    "neighbors": 750
   },
   "hybrid": {
-    "neighbors": 100,
-    "alpha": 0.75
+    "neighbors": 1000,
+    "alpha": 0.8
   },
   "minmax_epsilon": 1e-12,
   "hybrid_scoring_rule": "uniform_cf_weight_v2",

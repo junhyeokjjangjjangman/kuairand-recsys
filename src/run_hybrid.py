@@ -1,4 +1,4 @@
-"""Validate the nine planned hybrid settings and freeze the best settings."""
+"""Validate the configured hybrid grid and freeze the best settings."""
 
 import json
 
@@ -24,6 +24,7 @@ def main():
     content = pd.read_csv(
         PROCESSED_DIR / "content_validation_scores.csv",
         dtype={"has_item_tags": "boolean", "has_user_tags": "boolean"},
+        float_precision="round_trip",
     )
 
     metric = f"NDCG@{TOP_K}"
@@ -34,7 +35,8 @@ def main():
 
     for neighbors in sizes:
         cf = pd.read_csv(
-            PROCESSED_DIR / f"item_knn_validation_k{neighbors}_scores.csv"
+            PROCESSED_DIR / f"item_knn_validation_k{neighbors}_scores.csv",
+            float_precision="round_trip",
         )
         for alpha in weights:
             print(f"Validation: neighbors={neighbors}, alpha={alpha}", flush=True)

@@ -19,5 +19,7 @@ PERIODS = {
 MIN_HISTORY = 5
 MIN_CANDIDATES = 20
 TOP_K = 10
-NEIGHBOR_SIZES = [20, 50, 100]
-CF_WEIGHTS = [0.25, 0.50, 0.75]
+# Expanded validation grid. Select settings using validation NDCG@10 only.
+NEIGHBOR_SIZES = [20, 50, 100, 200, 300, 500, 750, 1000]
+# alpha=1.0 is the CF-only control for the normalized hybrid scorer.
+CF_WEIGHTS = [0.25, 0.5, 0.75, 0.8, 0.9, 1.0]

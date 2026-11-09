@@ -1,0 +1,32 @@
+[
+  {
+    "kind": "improved",
+    "user_id": 10239,
+    "CF_NDCG": 0.30315953217404545,
+    "Hybrid_NDCG": 0.3724928669383442,
+    "video_id": 2189,
+    "label": 1,
+    "tag_ids": [
+      "3"
+    ],
+    "CF_rank": 6,
+    "Hybrid_rank": 4,
+    "cf_norm": 0.6059290892329426,
+    "content_norm": 0.5656854249492381
+  },
+  {
+    "kind": "worsened",
+    "user_id": 5063,
+    "CF_NDCG": 0.7457912185292984,
+    "Hybrid_NDCG": 0.6877116218800606,
+    "video_id": 7522,
+    "label": 0,
+    "tag_ids": [
+      "39"
+    ],
+    "CF_rank": 9,
+    "Hybrid_rank": 3,
+    "cf_norm": 0.24763736691038754,
+    "content_norm": 1.0
+  }
+]

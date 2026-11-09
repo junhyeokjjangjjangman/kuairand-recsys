@@ -1,70 +1,62 @@
-KuaiRand 추천 시스템 텀프로젝트
-시청 이력만 사용하는 **Item-KNN에 영상 태그를 추가하면 추천 성능이 좋아지는가?**를 확인하는 프로젝트입니다.
+# KuaiRand 추천 시스템 텀프로젝트
 
-인기순 추천, Item-KNN, 하이브리드를 같은 조건에서 비교하고, 기존 사용자 ID를 입력하면 영상 ID와 추천 점수를 최대 10개 출력합니다.
+**연구 질문: 시청 이력 기반 Item-KNN에 영상 태그를 추가하면 추천 성능이 좋아지는가?**
 
-저장소: https://github.com/junhyeokjjangjjangman/kuairand-recsys
+인기순 추천, Item-KNN, Hybrid를 비교하고 기존 사용자 ID로 영상 최대 10개를 추천합니다.
 
+## 빠른 실행 순서
 
+**처음 실행:** 저장소 다운로드 → 가상환경 생성 → 라이브러리 설치 → 원본 CSV 준비 → 아래 순서대로 실행
 
-빠른 실행 순서
-처음 실행할 때
+**데이터 준비:** `split_data.py` → `preprocess_data.py` → `prepare_candidates.py`
 
-Python 3.13·Git·VS Code 설치 → 저장소 다운로드 → VS Code에서 프로젝트 폴더 열기
+**모델 생성·검증:** `popularity.py` → `run_item_knn.py` → `content.py` → `run_hybrid.py`
 
-→ 가상환경 생성 → 라이브러리 설치 → 원본 CSV 3개를 data/raw에 넣기
+**평가·분석·데모:** `run_test.py` → `analyze_results.py` → `demo.py`
 
-→ 아래 파일을 순서대로 실행 → 사용자 ID 5 입력 → 추천 결과 확인
+모델 생성까지 완료했다면 `src/demo.py`를 실행하여 추천을 확인할 수 있습니다.
 
-파일 실행 순서
+## 1. 환경 준비
 
-split_data.py → preprocess_data.py → prepare_candidates.py
-→ popularity.py → run_item_knn.py → content.py
-→ run_hybrid.py → run_test.py → demo.py
+Windows PowerShell 기준이며 개발에 사용한 Python은 3.13.7입니다.
+아래 명령은 프로젝트를 처음 내려받을 때 실행합니다.
 
-한 번 전부 실행한 다음부터
-
-VS Code에서 프로젝트 폴더 열기 → 터미널에서 아래 명령 실행 → 사용자 ID 입력
-.\.venv\Scripts\python.exe .\src\demo.py
-각 단계의 실제 명령어는 아래 2~6절에 있습니다
-
-
-1. 실행 환경
-아래 안내는 Windows PowerShell 기준입니다.
-- 개발 시 사용한 Python: 3.13.7
-- 필요한 프로그램: Python 3.13, Git, VS Code
-- 주요 라이브러리: pandas, NumPy, SciPy, scikit-learn
-- 라이브러리는 requirements.txt로 설치합니다.
-GitHub 공동작업자로 초대받은 팀원은 초대를 수락해 주세요.
-2. 프로젝트 다운로드
-VS Code에서 터미널 → 새 터미널을 열고 PowerShell에서 다음 명령을 실행합니다.
+```powershell
 git clone https://github.com/junhyeokjjangjjangman/kuairand-recsys.git
 cd kuairand-recsys
-VS Code의 파일 → 폴더 열기에서 방금 내려받은 kuairand-recsys 폴더를 열면 코드를 확인할 수 있습니다.
-
-이후 모든 명령은 requirements.txt와 src 폴더가 있는 프로젝트 최상위 폴더에서 실행합니다.
-
-이미 프로젝트를 내려받았다면 해당 폴더에서 다음 명령으로 최신 변경 내용을 받습니다.
-git pull origin main
-3. Python 환경과 라이브러리 설치
 py -3.13 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
-아래 실행 명령은 가상환경의 Python 경로를 직접 사용합니다.
-4. 원본 데이터 준비
-사용하는 데이터는 KuaiRand-Pure입니다. 원본 CSV는 팀에서 별도로 공유받거나 공식 배포 페이지에서 KuaiRand-Pure를 내려받아 준비합니다.
+```
 
-먼저 원본 데이터를 넣을 폴더를 만듭니다.
+주요 라이브러리: pandas, NumPy, SciPy, scikit-learn, Matplotlib.
+
+이후 명령은 모두 `requirements.txt`가 있는 프로젝트 최상위 폴더에서 실행합니다.
+
+## 2. 원본 데이터 준비
+
+[KuaiRand 공식 배포 페이지](https://kuairand.com/)에서 **KuaiRand-Pure**를 준비합니다.
+
+다음 세 파일을 `data/raw` 바로 안에 넣습니다.
+
+```powershell
 New-Item -ItemType Directory -Force .\data\raw
-아래 세 CSV 파일을 data/raw 바로 안에 넣습니다. 압축을 해제한 폴더가 한 단계 더 들어가지 않도록 최종 경로를 확인합니다.
-최종 파일 경로	용도
-data/raw/log_standard_4_08_to_4_21_pure.csv	학습용 일반 노출 로그
-data/raw/log_random_4_22_to_5_08_pure.csv	검증·테스트용 무작위 노출 로그
-data/raw/video_features_basic_pure.csv	영상 ID와 태그 정보
+```
 
+| 파일 경로 | 용도 |
+|---|---|
+| `data/raw/log_standard_4_08_to_4_21_pure.csv` | 학습용 일반 노출 로그 |
+| `data/raw/log_random_4_22_to_5_08_pure.csv` | 검증·테스트용 무작위 노출 로그 |
+| `data/raw/video_features_basic_pure.csv` | 영상 ID와 태그 정보 |
 
-Git에서 제외된 원본 데이터와 data/processed의 생성 파일은 저장소 다운로드만으로 준비되지 않습니다. 처음 실행할 때는 다음 단계에서 전처리 결과와 모델을 생성해야 합니다.
-5. 처음 실행할 때: 전처리부터 테스트까지
-다음 명령을 위에서부터 하나씩 실행합니다. 현재 명령이 정상적으로 끝나고 터미널 입력줄이 돌아오면 다음 명령을 실행합니다. 오류가 발생하면 해당 단계의 오류를 해결한 뒤 이어서 진행합니다.
+`data/raw/`와 `data/processed/`는 Git 관리 대상에서 제외합니다.
+
+처음 내려받은 경우 원본 데이터 준비와 전처리·모델 생성이 필요합니다.
+
+## 3. 전체 실험 실행
+
+한 명령이 정상적으로 끝나면 다음 명령을 실행합니다.
+
+```powershell
 .\.venv\Scripts\python.exe .\src\split_data.py
 .\.venv\Scripts\python.exe .\src\preprocess_data.py
 .\.venv\Scripts\python.exe .\src\prepare_candidates.py
@@ -73,98 +65,192 @@ Git에서 제외된 원본 데이터와 data/processed의 생성 파일은 저�
 .\.venv\Scripts\python.exe .\src\content.py
 .\.venv\Scripts\python.exe .\src\run_hybrid.py
 .\.venv\Scripts\python.exe .\src\run_test.py
-실행 파일	수행 내용
-split_data.py	원본 로그를 학습·검증·테스트 기간으로 분리
-preprocess_data.py	기간별 중복 사용자–영상 쌍 통합, 학습 관심·노출 이력 저장
-prepare_candidates.py	평가 사용자·후보·정답 확정
-popularity.py	학습 양성 사용자 수를 이용한 인기순 추천
-run_item_knn.py	Item-KNN 모델 생성 및 이웃 수별 검증
-content.py	태그 벡터·사용자 취향 벡터 생성 및 콘텐츠 점수 계산
-run_hybrid.py	하이브리드 설정별 검증 및 최적 설정 저장
-run_test.py	검증에서 선택한 설정을 고정하고 테스트 평가
+.\.venv\Scripts\python.exe .\src\analyze_results.py
+```
 
+분석의 부트스트랩 계산 중에는 출력이 잠시 멈춰 있을 수 있습니다.
 
-원본 구조·통계를 확인하거나 평가 함수의 예시 검사를 실행하려면 다음 명령을 추가로 사용할 수 있습니다.
-.\.venv\Scripts\python.exe .\src\inspect_data.py
-.\.venv\Scripts\python.exe .\src\data_summary.py
-.\.venv\Scripts\python.exe .\src\evaluation.py
-6. 추천 데모 실행
-5단계를 완료한 뒤 실행합니다.
+마지막에 `Saved analyses to:`가 나오면 분석이 완료된 것입니다.
+
+같은 전처리 데이터를 사용해 탐색 설정을 바꿨다면 `run_item_knn.py`부터 다시 실행하여 모델과 결과를 갱신합니다.
+
+## 4. 추천 데모
+
+```powershell
 .\.venv\Scripts\python.exe .\src\demo.py
-터미널에 User ID:가 나오면 기존 사용자 ID를 입력하고 Enter를 누릅니다. 예를 들어 5를 입력할 수 있습니다.
-- 출력: 추천 순위, 영상 ID, 추천 점수 최대 10개
-- 저장 예시: results/demo_user_5.csv
-- 종료: q 입력 후 Enter
-모델 생성과 테스트를 완료한 다음부터는 위 데모 명령으로 실행할 수 있습니다. 데이터나 모델 설정을 변경했다면 관련 전처리·모델 생성·평가 단계를 다시 진행해야 합니다.
+```
 
-데모는 전체 영상 목록에서 해당 사용자의 학습 기간 전체 노출 영상을 제외하고 추천합니다. 양성 학습 이력이 없는 기존 사용자는 인기순 추천을 받습니다.
+- `User ID:`에 기존 사용자 ID를 입력합니다. 예: `5`
+- 영상 ID와 추천 점수를 최대 10개 출력합니다.
+- 결과는 `results/demo_user_5.csv`처럼 저장합니다.
+- 종료하려면 `q`를 입력합니다.
 
-추천 점수는 후보의 순위를 정하기 위한 값이며, 시청 확률이나 정확도를 뜻하지 않습니다.
-7. 현재 실험 조건과 결과
-데이터 분할
-구분	기간	로그 종류
-학습	2022-04-09 ~ 2022-04-21	일반 노출
-검증	2022-04-22 ~ 2022-04-28	무작위 노출
-테스트	2022-04-29 ~ 2022-05-08	무작위 노출
+데모는 전체 영상 목록에서 해당 사용자의 **학습 기간 전체 노출 영상**을 제외하고 추천합니다.
 
+양성 학습 이력이 없는 기존 사용자는 인기순 추천을 받습니다.
 
-기간을 먼저 나누고, 각 기간에서 같은 사용자–영상 쌍을 통합합니다. 해당 기간에 한 번이라도 long_view = 1이면 그 쌍의 정답을 1로 처리합니다.
+추천 점수는 순위를 정하는 값이며 시청 확률이나 정확도를 뜻하지 않습니다.
 
-평가 대상은 다음 조건을 만족하는 사용자입니다.
-- 학습 기간의 서로 다른 관심 영상이 5개 이상
-- 평가 기간에 무작위로 노출된 영상 중 학습 기간 전체 노출 영상을 제외
-- 남은 후보가 20개 이상이고, 그 안에 정답 1과 0이 각각 하나 이상 존재
-모든 모델은 같은 평가 사용자·후보에서 비교합니다. 검증은 2,322명, 테스트는 7,737명·후보 527,231쌍입니다.
-모델 설정
-- Item-KNN 이웃 수 탐색: 20, 50, 100
-- 하이브리드 CF 비중 탐색: 0.25, 0.50, 0.75
-- 선택 기준: 검증 NDCG@10
-- 선택된 설정: Item-KNN 이웃 수 100, 하이브리드 이웃 수 100·CF 비중 0.75
-- 동점 처리: 점수 내림차순, 영상 ID 오름차순
-하이브리드는 사용자별 후보에서 CF와 콘텐츠 점수를 각각 정규화한 뒤 결합합니다. 태그가 없는 후보는 콘텐츠 항을 0으로 두고, 모든 후보에 동일한 CF 가중치를 적용합니다.
-Hybrid = alpha × CF_normalized + (1 - alpha) × Content_normalized
-수정된 계산 규칙은 설정 파일에 hybrid_scoring_rule: uniform_cf_weight_v2로 기록됩니다. 테스트에는 원래 학습 기간의 이력만 사용하며 검증 이력을 추가하지 않습니다.
-수정 후 테스트 결과
-모델	평가 사용자 수	Recall@10	NDCG@10
-Popularity	7,737	0.363685	0.303846
-Item-KNN	7,737	0.346420	0.304554
-Hybrid	7,737	0.363614	0.314260
+## 5. 데이터 처리와 평가 조건
 
+| 구분 | 기간 | 로그 종류 |
+|---|---|---|
+| 학습 | 2022-04-09 ~ 2022-04-21 | 일반 노출 |
+| 검증 | 2022-04-22 ~ 2022-04-28 | 무작위 노출 |
+| 테스트 | 2022-04-29 ~ 2022-05-08 | 무작위 노출 |
 
-하이브리드는 Item-KNN보다 평균 Recall@10이 약 4.96%, 평균 NDCG@10이 약 3.19% 높았습니다. 인기순 대비 Recall@10 개선은 확인되지 않았습니다.
+기간을 먼저 나누고 각 기간 안에서 중복 사용자-영상 쌍을 통합합니다.
 
-현재 표는 태그 누락 처리 규칙을 수정한 뒤 같은 테스트 기간에서 재평가한 결과입니다. 원래 테스트를 확인한 뒤 수정한 실험으로 구분해 기록합니다.
+한 번이라도 `long_view=1`이면 해당 기간의 관심 기록을 1로 처리합니다.
 
-평가는 선정된 사용자의 무작위 노출 후보 안에서 수행하며, 데모는 전체 영상 목록을 사용합니다. 이 결과를 전체 사용자나 전체 카탈로그에서의 성능으로 일반화하지 않습니다.
-8. 코드와 결과 위치
-위치	내용
-src/	설정·전처리·모델·평가·데모 코드
-src/config.py	데이터 경로·기간·평가 조건·탐색 설정
-data/raw/	원본 CSV 세 파일
-data/processed/	생성된 전처리 데이터·후보·모델·점수
-results/final_test_metrics.csv	세 모델의 테스트 성능표
-results/item_knn_validation_metrics.csv	Item-KNN 이웃 수별 검증 결과
-results/hybrid_validation_metrics.csv	하이브리드 설정별 검증 결과
-results/best_settings.json	검증에서 선택한 설정
-results/final_test_settings.json	테스트에 사용한 설정 사본
-results/popularity_test_users.csv	인기순 추천의 사용자별 테스트 결과
-results/item_knn_test_users.csv	Item-KNN의 사용자별 테스트 결과
-results/hybrid_test_users.csv	하이브리드의 사용자별 테스트 결과
+0은 관심 기준을 충족한 행동이 관찰되지 않았다는 뜻이며 비호감으로 단정하지 않습니다.
 
+평가 조건은 다음과 같습니다.
 
-9. 실행 중 문제가 생겼을 때
-증상	확인할 내용
-py -3.13 실행 실패	Python 3.13 설치와 Python 실행 명령을 확인
-필요한 라이브러리가 없다는 오류	가상환경의 Python으로 pip install -r requirements.txt 실행
-원본 CSV를 찾지 못함	data/raw 바로 안의 파일명과 실행 위치 확인
-train_positive.csv, 후보 CSV, .npz 모델 등을 찾지 못함	5단계에서 해당 파일을 만드는 이전 명령이 완료됐는지 확인
-Hybrid 계산 규칙이 다르다는 오류	최신 코드로 run_hybrid.py, run_test.py를 순서대로 실행한 뒤 데모 실행
-사용자 ID를 찾지 못함	원본 데이터에 있는 기존 사용자 ID를 입력. 예: 5
+- 학습 기간에 서로 다른 관심 영상이 5개 이상인 사용자.
+- 평가 기간에 무작위로 노출된 영상 중 학습 기간 전체 노출 영상을 제외한 후보.
+- 남은 후보가 20개 이상이고 정답 1과 0이 각각 하나 이상 존재.
+- 모든 모델에 동일한 사용자·후보·정답을 적용.
+- 검증·테스트 기록은 학습 행렬과 사용자 취향 벡터에 추가하지 않음.
 
-10. 추후 검토 사항
-- 학습·검증·테스트 데이터가 분리되어 있는지
-- 관심 이력과 전체 노출 이력이 올바르게 구분되는지
-- 모델별 평가 사용자·후보가 동일한지
-- Item-KNN·태그 점수·하이브리드 결합 계산이 정확한지
-- 평가 지표 계산과 동점 처리가 일관적인지
-- 평가 대상의 대표성, 설정 탐색 범위, 결과 해석에 추가 검토가 필요한지
+검증 사용자는 **2,322명**, 테스트 사용자는 **7,737명**, 테스트 후보는 **527,231쌍**입니다.
+
+| 지표 | 의미 |
+|---|---|
+| Recall@10 | 후보 안의 관심 영상 중 상위 10개로 찾아낸 비율 |
+| NDCG@10 | 관심 영상을 높은 순위에 얼마나 잘 배치했는지 평가 |
+
+지표는 사용자별로 계산한 뒤 평균을 냅니다.
+
+동점은 영상 ID 오름차순으로 처리합니다.
+
+## 6. 모델과 설정 선택
+
+| 모델 | 점수 계산 |
+|---|---|
+| Popularity | 학습 기간에 관심을 보인 서로 다른 사용자 수 |
+| Item-KNN | 후보 영상의 이웃 중 사용자 학습 관심 영상과의 코사인 유사도 합 |
+| Hybrid | 정규화한 CF 점수와 태그 점수의 가중합 |
+
+영상은 46개 태그의 이진 벡터로 표현합니다.
+
+사용자 취향은 학습 관심 영상들의 태그 벡터 평균으로 만들고 후보 태그 벡터와의 코사인 유사도를 계산합니다.
+
+`Hybrid = alpha * CF_normalized + (1 - alpha) * Content_normalized`
+
+두 점수는 사용자별 후보 안에서 0~1로 정규화합니다.
+
+태그가 없는 후보의 콘텐츠 항은 0으로 두고 모든 후보에 같은 CF 가중치를 적용합니다.
+
+사용 가능한 사용자 태그가 없거나 점수 범위가 상수인 경우에도 해당 콘텐츠 항 또는 정규화 값은 0입니다.
+
+계산 규칙은 `uniform_cf_weight_v2`입니다.
+
+| 탐색 항목 | 범위 |
+|---|---|
+| 이웃 수 | 20, 50, 100, 200, 300, 500, 750, 1000 |
+| CF 가중치 alpha | 0.25, 0.50, 0.75, 0.80, 0.90, 1.0 |
+
+설정은 **검증 NDCG@10**으로 선택합니다.
+
+alpha=1.0은 CF만 사용하는 대조 설정입니다.
+
+| 모델 | 검증에서 선택한 설정 | 검증 NDCG@10 |
+|---|---|---:|
+| Item-KNN | k=750 | 0.340528 |
+| Hybrid | k=1000, alpha=0.8 | 0.349759 |
+
+## 7. 테스트 결과
+
+### 같은 이웃 수에서 태그 효과
+
+| 모델 | 설정 | Recall@10 | NDCG@10 |
+|---|---|---:|---:|
+| Item-KNN | k=750 | 0.388225 | 0.333357 |
+| Hybrid | k=750, alpha=0.8 | 0.390905 | 0.336507 |
+
+태그 추가 시 평균 Recall은 상대적으로 약 **0.69%**, NDCG는 약 **0.94%** 높았습니다.
+
+사용자 단위 대응 BCa 부트스트랩 20,000회, seed=42로 계산한 NDCG 평균 차이는 **+0.003150**이며, 95% 신뢰구간은 **[+0.001072, +0.005231]**입니다.
+
+NDCG의 소폭 평균 개선을 뒷받침하지만 Recall 개선은 통계적으로 확실하지 않습니다.
+
+사용자별 NDCG 변화는 **개선 35.23% / 동률 30.02% / 하락 34.74%**입니다.
+
+평균 개선이 모든 사용자의 개선을 뜻하지 않습니다.
+
+![같은 이웃 수 750에서 태그 효과](results/analysis_k750/01_same_k750.png)
+
+### 모델별 검증 최적 설정 비교
+
+| 모델 | 설정 | Recall@10 | NDCG@10 |
+|---|---|---:|---:|
+| Popularity | 별도 튜닝 없음 | 0.363685 | 0.303846 |
+| Item-KNN | k=750 | 0.388225 | 0.333357 |
+| Hybrid | k=1000, alpha=0.8 | 0.391684 | 0.337335 |
+
+- Hybrid는 Item-KNN보다 Recall 약 **0.89%**, NDCG 약 **1.19%** 높았습니다.
+- Hybrid는 Popularity보다 Recall 약 **7.70%**, NDCG 약 **11.02%** 높았습니다.
+
+위 수치는 상대 개선율(%)입니다.
+
+모델별 선택 설정 비교에는 이웃 수 변경 효과도 포함됩니다.
+
+Item-KNN 대비 NDCG 개선에는 통계적 근거가 있지만 Recall 개선은 확실하지 않습니다.
+
+## 8. 분석 결과와 코드 위치
+
+| 위치 | 내용 |
+|---|---|
+| `src/config.py` | 데이터 경로·기간·평가 조건·탐색 범위 |
+| `src/analyze_results.py` | 같은 k 비교·대응 통계·그래프·사용자 사례 분석 |
+| `results/best_settings.json` | 검증에서 선택한 설정 |
+| `results/final_test_settings.json` | 테스트에 사용한 설정 |
+| `results/final_test_metrics.csv` | 세 모델의 최종 테스트 성능 |
+| `results/analysis_k750/analysis_summary.txt` | 추가 분석 결과와 해석 |
+| `results/analysis_k750/same_k750_metrics.csv` | 같은 k=750에서의 비교 |
+| `results/analysis_k750/paired_bootstrap_results.csv` | 신뢰구간·개선/동률/하락 비율 |
+| `results/analysis_k750/performance_by_history.csv` | 관심 이력 수에 따른 집단별 성능 |
+| `results/analysis_k750/case_descriptions.json` | 개선·하락 추천 사례 설명 |
+| `results/analysis_k750/case_improved_top10.csv` | 개선 사례의 추천 목록 |
+| `results/analysis_k750/case_worsened_top10.csv` | 하락 사례의 추천 목록 |
+| `results/analysis_k750/analysis_settings.json` | 분석 설정·환경·입력 해시 |
+
+추가 분석 폴더의 `01`~`06` PNG·PDF는 다음 그래프입니다.
+
+1. 같은 이웃 수에서 태그 효과
+2. NDCG 차이의 신뢰구간
+3. 이웃 수별 검증 성능
+4. 이웃 수·가중치별 검증 성능
+5. 초기·최종 설정 비교
+6. 사용자 집단별 성능
+
+`CF750`은 Item-KNN k=750을 뜻합니다.
+
+`HY750`과 `HY1000`은 각각 k=750과 1000의 Hybrid(alpha=0.8)를 뜻합니다.
+
+초기 비교용 `HY100`은 k=100, alpha=0.75입니다.
+
+추천 사례는 같은 k=750에서 개선 집단과 하락 집단 각각의 NDCG 변화가 중앙값에 가까운 사용자를 선택합니다.
+
+## 9. 결과 해석과 한계
+
+- 평가 대상은 일정 수준의 학습 관심 이력과 평가 노출이 있는 사용자입니다.
+- 평가는 무작위 노출 후보 안에서 수행하며 데모는 전체 영상 목록을 사용합니다.
+- 초기 테스트를 확인한 뒤 탐색 범위를 확장하고 추가 분석을 수행했습니다. 새로운 미사용 테스트의 확증으로 표현하지 않습니다.
+- 검증표는 명시한 범위를 재계산한 자료이며 팀의 원래 전체 확장 탐색 기록은 아닙니다.
+- 신뢰구간은 학습 모델을 고정한 사용자 표본 변동에 대한 비교별 구간입니다. 여러 비교의 동시 95% 보장을 뜻하지 않습니다.
+- 사용자 집단별 평균과 두 추천 사례는 설명 분석이며 집단 간 유의성 검정 결과는 아닙니다.
+
+## 10. 실행 중 문제가 생겼을 때
+
+| 증상 | 확인할 내용 |
+|---|---|
+| 원본 CSV를 찾지 못함 | `data/raw` 바로 안의 파일명과 경로 확인 |
+| 전처리 CSV·모델 NPZ를 찾지 못함 | 전체 실행 순서에서 앞 단계를 완료했는지 확인 |
+| `matplotlib` 모듈이 없음 | 가상환경 Python으로 `pip install -r requirements.txt` 실행 |
+| 새로운 이웃 수의 점수 파일이 없음 | `run_item_knn.py`부터 다시 실행 |
+| `Complete Step 1` 오류 | 확장 검증·설정 선택·테스트 실행까지 완료했는지 확인 |
+| 알 수 없는 사용자 ID | 데이터에 존재하는 사용자 ID 입력. 예: `5` |
+
+저장소: https://github.com/junhyeokjjangjjangman/kuairand-recsys

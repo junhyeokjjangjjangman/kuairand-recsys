@@ -1,0 +1,67 @@
+﻿대표 비교: Item-KNN 750 vs Hybrid 750, alpha=0.8
+모델별 선택 설정: Item-KNN 750 vs Hybrid 1000, alpha=0.8
+
+            users  Recall@10   NDCG@10
+model                                 
+Popularity   7737   0.363685  0.303846
+CF100        7737   0.346420  0.304554
+HY100        7737   0.363614  0.314260
+CF750        7737   0.388225  0.333357
+HY750        7737   0.390905  0.336507
+CF1000       7737   0.389775  0.334487
+HY1000       7737   0.391684  0.337335
+
+         comparison    metric  primary  difference  relative_gain_percent  wins_percent  ties_percent  losses_percent  ci95_low  ci95_high                 conclusion
+      HY750 - CF750   NDCG@10     True    0.003150               0.944994     35.233295     30.024557       34.742148  0.001072   0.005231              Hybrid higher
+      HY750 - CF750 Recall@10    False    0.002680               0.690264     17.164276     66.834690       16.001034 -0.001573   0.006957 Difference not established
+    HY1000 - CF1000   NDCG@10    False    0.002848               0.851321     35.478868     30.502779       34.018353  0.000761   0.004934              Hybrid higher
+    HY1000 - CF1000 Recall@10    False    0.001908               0.489630     17.203050     67.080264       15.716686 -0.002337   0.006134 Difference not established
+     HY1000 - CF750   NDCG@10    False    0.003978               1.193170     36.525785     29.171514       34.302701  0.001839   0.006125              Hybrid higher
+     HY1000 - CF750 Recall@10    False    0.003459               0.890927     17.732971     66.201370       16.065659 -0.000964   0.007748 Difference not established
+HY1000 - Popularity   NDCG@10    False    0.033488              11.021484     49.011245     17.849296       33.139460  0.029488   0.037653              Hybrid higher
+HY1000 - Popularity Recall@10    False    0.027999               7.698626     30.205506     50.200336       19.594158  0.022005   0.033952              Hybrid higher
+
+사용자별 NDCG: 개선 35.23%, 동률 30.02%, 하락 34.74%
+
+추천 사례: 같은 k=750 비교의 개선/하락 집단별 중앙값 근처 사용자
+[
+  {
+    "kind": "improved",
+    "user_id": 10239,
+    "CF_NDCG": 0.30315953217404545,
+    "Hybrid_NDCG": 0.3724928669383442,
+    "video_id": 2189,
+    "label": 1,
+    "tag_ids": [
+      "3"
+    ],
+    "CF_rank": 6,
+    "Hybrid_rank": 4,
+    "cf_norm": 0.6059290892329426,
+    "content_norm": 0.5656854249492381
+  },
+  {
+    "kind": "worsened",
+    "user_id": 5063,
+    "CF_NDCG": 0.7457912185292984,
+    "Hybrid_NDCG": 0.6877116218800606,
+    "video_id": 7522,
+    "label": 0,
+    "tag_ids": [
+      "39"
+    ],
+    "CF_rank": 9,
+    "Hybrid_rank": 3,
+    "cf_norm": 0.24763736691038754,
+    "content_norm": 1.0
+  }
+]
+
+해석: 양의 NDCG 신뢰구간은 평균 개선을 뒷받침하나 개선 폭은 작습니다.
+Recall 차이의 구간에 0이 포함되면 확실한 개선으로 단정하지 않습니다.
+신뢰구간은 비교별 구간이며 여러 비교의 동시 95% 보장을 뜻하지 않습니다.
+검증표는 명시한 범위를 재계산한 자료이며 원래 전체 탐색 기록은 아닙니다.
+초기 테스트 확인 이후의 추가 분석이며 새로운 미사용 테스트의 확증이 아닙니다.
+평가 사용자와 무작위 노출 후보 안에서의 성능으로 해석합니다.
+집단별 평균은 설명 분석이며 집단 간 유의성 검정 결과는 아닙니다.
+정답 0은 비호감을 뜻하지 않으며 사례 원점수는 모델 간 직접 비교하지 않습니다.
